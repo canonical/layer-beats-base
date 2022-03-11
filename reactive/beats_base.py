@@ -27,11 +27,17 @@ def cache_logstash_data(logstash):
         hosts = cache.get('beat.logstash')
     else:
         hosts = []
+    removed_hosts = hosts.copy()
     for unit in units:
         host_string = "{0}:{1}".format(unit['private_address'],
                                        unit['port'])
         if host_string not in hosts:
             hosts.append(host_string)
+        else:
+            removed_hosts.remove(host_string)
+    if len(removed_hosts) != 0:
+        for host in removed_hosts:
+            hosts.remove(host)
 
     cache.set('beat.logstash', hosts)
     set_state('beat.render')

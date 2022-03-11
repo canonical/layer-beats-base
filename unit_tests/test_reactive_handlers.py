@@ -45,12 +45,25 @@ class TestHandlers(TestCase):
                 super(Endpoint, self).__init__(*args, **kw)
 
             def list_unit_data(self):
-                return [{'private_address': None, 'port': None}]
+                return [{'private_address': "1.1.1.1", 'port': "88"}]
 
         logstash = Endpoint()
+        mock_kv().get.return_value = []
         remove_state('beat.render')
         cache_logstash_data(logstash)
         self.assertTrue(is_state('beat.render'))
+        kv_calls = [call(), call(), call().get('beat.logstash'),
+                    call().set('beat.logstash', ['1.1.1.1:88'])]
+        self.assertEqual(mock_kv.mock_calls, kv_calls)
+
+        mock_kv().get.return_value = ["1.1.1.1:88", "2.2.2.2:88"]
+        remove_state('beat.render')
+        cache_logstash_data(logstash)
+        self.assertTrue(is_state('beat.render'))
+        kv_calls = kv_calls + [call(), call(), call().get('beat.logstash'),
+                               call().get('beat.logstash'),
+                               call().set('beat.logstash', ['1.1.1.1:88'])]
+        self.assertEqual(mock_kv.mock_calls, kv_calls)
 
     @mock.patch('beats_base.kv')
     def test_cache_remove_logstash_data(self, mock_kv):
