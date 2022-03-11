@@ -9,13 +9,13 @@ charms will determine when a new version is available and will set informative
 status directing operators to run this action.
 """
 
-import charms.apt
-import charms.reactive
 import sys
 
+import charms.apt
+import charms.reactive
+from charmhelpers.core import hookenv, host, unitdata
 from charms.layer import status
 from charms.reactive import is_state, remove_state, set_state
-from charmhelpers.core import hookenv, host, unitdata
 
 
 def fail(msg):
