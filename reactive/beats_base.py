@@ -22,7 +22,7 @@ def waiting_messaging():
     status.waiting("Waiting for: elasticsearch, logstash or kafka.")
 
 
-def cache_data(host_name, host_instance):
+def cache_data(service, host_instance):
     if host_name == "kafka":
         units = host_instance.kafkas()
     else:
