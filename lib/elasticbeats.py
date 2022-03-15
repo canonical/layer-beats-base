@@ -12,6 +12,7 @@ from charms.apt import get_package_version
 from charms.templating.jinja2 import render
 
 
+# flake8: noqa: C901
 def render_without_context(source, target):
     """Render beat template from global state context."""
     cache = kv()
