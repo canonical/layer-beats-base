@@ -37,7 +37,7 @@ def cache_data(service, host_instance):
         if host_string not in hosts:
             hosts.append(host_string)
 
-    cache.set("beat.{}".format(host_name), hosts)
+    cache.set("beat.{}".format(service), hosts)
     set_state("beat.render")
 
 
