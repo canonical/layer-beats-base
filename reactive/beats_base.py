@@ -43,7 +43,7 @@ def cache_data(service, host_instance):
 
 def cache_remove_data(host_name):
     cache = kv()
-    cache.unset("beat.{}".format(host_name))
+    cache.unset("beat.{}".format(service))
     set_state("beat.render")
 
 
