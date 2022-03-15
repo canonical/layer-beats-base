@@ -30,7 +30,7 @@ def cache_data(service, host_instance):
 
     cache = kv()
     hosts = []
-    address_key = "private_address" if host_name == "logstash" else "host"
+    address_key = "private_address" if service == "logstash" else "host"
     for unit in units:
         host_string = "{0}:{1}".format(unit[address_key],
                                        unit["port"])
