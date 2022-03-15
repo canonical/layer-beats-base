@@ -23,7 +23,7 @@ def waiting_messaging():
 
 
 def cache_data(service, host_instance):
-    if host_name == "kafka":
+    if service == "kafka":
         units = host_instance.kafkas()
     else:
         units = host_instance.list_unit_data()
