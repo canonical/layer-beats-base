@@ -1,88 +1,77 @@
 from charms.layer import status
-from charms.reactive import when
-from charms.reactive import when_not
-from charms.reactive import set_state
 from charmhelpers.core.unitdata import kv
 
+from charms.reactive import (
+    when,
+    when_not,
+    set_state,
+)
 
-@when('config.changed')
+
+@when("config.changed")
 def config_changed():
-    set_state('beat.render')
+    set_state("beat.render")
 
 
-@when_not('logstash.available',
-          'elasticsearch.available',
-          'kafka.ready',
-          'config.set.logstash_hosts',
-          'config.set.kafka_hosts')
+@when_not("logstash.available",
+          "elasticsearch.available",
+          "kafka.ready",
+          "config.set.logstash_hosts",
+          "config.set.kafka_hosts")
 def waiting_messaging():
-    status.waiting('Waiting for: elasticsearch, logstash or kafka.')
+    status.waiting("Waiting for: elasticsearch, logstash or kafka.")
 
 
-@when('logstash.available')
-def cache_logstash_data(logstash):
-    units = logstash.list_unit_data()
-    cache = kv()
-    if cache.get('beat.logstash'):
-        hosts = cache.get('beat.logstash')
+def cache_data(service, host_instance):
+    if service == "kafka":
+        units = host_instance.kafkas()
     else:
-        hosts = []
+        units = host_instance.list_unit_data()
+
+    cache = kv()
+    hosts = []
+    address_key = "private_address" if service == "logstash" else "host"
     for unit in units:
-        host_string = "{0}:{1}".format(unit['private_address'],
-                                       unit['port'])
+        host_string = "{0}:{1}".format(unit[address_key],
+                                       unit["port"])
         if host_string not in hosts:
             hosts.append(host_string)
 
-    cache.set('beat.logstash', hosts)
-    set_state('beat.render')
+    cache.set("beat.{}".format(service), hosts)
+    set_state("beat.render")
 
 
-@when_not('logstash.available')
+def cache_remove_data(service):
+    cache = kv()
+    cache.unset("beat.{}".format(service))
+    set_state("beat.render")
+
+
+@when("logstash.available")
+def cache_logstash_data(logstash):
+    cache_data("logstash", logstash)
+
+
+@when_not("logstash.available")
 def cache_remove_logstash_data():
-    cache = kv()
-    cache.unset('beat.logstash')
-    set_state('beat.render')
+    cache_remove_data("logstash")
 
 
-@when('elasticsearch.available')
+@when("elasticsearch.available")
 def cache_elasticsearch_data(elasticsearch):
-    units = elasticsearch.list_unit_data()
-    cache = kv()
-    hosts = []
-    for unit in units:
-        host_string = "{0}:{1}".format(unit['host'],
-                                       unit['port'])
-        if host_string not in hosts:
-            hosts.append(host_string)
-
-    cache.set('beat.elasticsearch', hosts)
-    set_state('beat.render')
+    cache_data("elasticsearch", elasticsearch)
 
 
-@when_not('elasticsearch.available')
+@when_not("elasticsearch.available")
 def cache_remove_elasticsearch_data():
-    cache = kv()
-    cache.unset('beat.elasticsearch')
-    set_state('beat.render')
+    cache_remove_data("elasticsearch")
 
 
-@when('kafka.ready')
+@when("kafka.ready")
 def cache_kafka_data(kafka):
-    units = kafka.kafkas()
-    cache = kv()
-    hosts = []
-    for unit in units:
-        host_string = "{0}:{1}".format(unit['host'],
-                                       unit['port'])
-        if host_string not in hosts:
-            hosts.append(host_string)
-
-    cache.set('beat.kafka', hosts)
-    set_state('beat.render')
+    cache_data("kafka", kafka)
 
 
-@when_not('kafka.ready')
+@when_not("kafka.ready")
 def cache_remove_kafka_data():
-    cache = kv()
-    cache.unset('beat.kafka')
-    set_state('beat.render')
+    cache_remove_data("kafka")

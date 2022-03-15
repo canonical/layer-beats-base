@@ -8,7 +8,7 @@ from charmhelpers.core.host import service_resume, service_pause
 
 from os import getenv, path
 
-
+# flake8: noqa: C901
 def render_without_context(source, target):
     """ Render beat template from global state context. """
     cache = kv()

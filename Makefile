@@ -1,6 +1,6 @@
 PYTHON_SCRIPTS = \
 	./actions/* \
-	./lib/charms/layer/elasticbeats.py \
+	./lib/elasticbeats.py \
 	./reactive/beats_base.py \
 	./unit_tests/*.py
 
