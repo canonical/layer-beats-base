@@ -1,7 +1,7 @@
 # Beats Base
 
 This is a middle layer to include the common functions among the Elastic Beats
-products. Such as delivery via apt, and common template parsing routines.
+products. Such as delivery via apt and common template parsing routines.
 
 
 ## States
@@ -27,7 +27,7 @@ charms configuration and relation data as context objects.
 - `get_package_candidate` - Checks the configured apt repo for an available
 candidate version.
 
-## Writing your own beat
+## Writing Your Own Beat
 
 Consuming beats-base as your base-layer when charming a beat makes this an
 exercise in fill in the blanks. With some project meta, and handling the
@@ -36,6 +36,8 @@ exercise in fill in the blanks. With some project meta, and handling the
 Provide the following as a getting started guide, along with a jinja template
 of the beats configuration and you're done with the first step to charming up
 an elastic beat!
+
+Thank You :)
 
 `layer.yaml`
 
