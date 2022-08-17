@@ -8,8 +8,6 @@ from unittest.mock import Mock
 # the elasticbeats imports since those depend on these layers.
 layer_mock = Mock()
 sys.modules["charms.apt"] = layer_mock
-sys.modules["charms.templating"] = layer_mock
-sys.modules["charms.templating.jinja2"] = layer_mock
 sys.modules["charms.layer.status"] = layer_mock
 
 from elasticbeats import get_package_candidate  # noqa: E402
