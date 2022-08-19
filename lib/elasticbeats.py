@@ -5,11 +5,11 @@
 import subprocess
 from os import getenv, path
 
+from charmhelpers.contrib.templating.jinja import render
 from charmhelpers.core.hookenv import config, juju_version, log, principal_unit
-from charmhelpers.core.host import service_pause, service_resume
+from charmhelpers.core.host import mkdir, service_pause, service_resume, write_file
 from charmhelpers.core.unitdata import kv
 from charms.apt import get_package_version
-from charms.templating.jinja2 import render
 
 
 # flake8: noqa: C901
@@ -61,7 +61,11 @@ def render_without_context(source, target):
         if key in context.keys() and context[key] and not isinstance(context[key], list):
             context[key] = context[key].split(" ")
 
-    render(source, target, context)
+    rendered_template = render(source, context)
+    target_dir = path.dirname(target)
+    if not path.exists(target_dir):
+        mkdir(target_dir, perms=0o755)
+    write_file(target, rendered_template.encode("UTF-8"))
     return connected
 
 
