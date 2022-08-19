@@ -10,7 +10,7 @@ layer_mock = Mock()
 sys.modules["charms.apt"] = layer_mock
 sys.modules["charms.layer.status"] = layer_mock
 
-from elasticbeats import get_package_candidate  # noqa: E402
+from elasticbeats import enable_beat_on_boot, get_package_candidate  # noqa: E402
 
 
 class TestElasticBeats(TestCase):
@@ -54,3 +54,12 @@ class TestElasticBeats(TestCase):
         mock_sub.return_value = grep_proc
         mock_pkg_ver.return_value = "0"
         self.assertEqual("1.2.3", get_package_candidate("foo"))
+
+    @mock.patch("elasticbeats.remove_beat_on_boot")
+    @mock.patch("elasticbeats.service_resume")
+    def test_enable_beats_on_boot(self, resume_mock, remove_beat_on_boot_mock):
+        service_name = "filebeat.service"
+        enable_beat_on_boot(service_name)
+
+        resume_mock.assert_called_once_with(service_name)
+        remove_beat_on_boot_mock.assert_called_once_with(service_name)
