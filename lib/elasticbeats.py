@@ -13,7 +13,7 @@ from charms.apt import get_package_version
 
 
 # flake8: noqa: C901
-def render_without_context(source, target):
+def render_without_context(source, target, extra_context=None):
     """Render beat template from global state context."""
     cache = kv()
     context = dict(config())
@@ -60,7 +60,8 @@ def render_without_context(source, target):
     for key in ("fields", "logpath"):
         if key in context.keys() and context[key] and not isinstance(context[key], list):
             context[key] = context[key].split(" ")
-
+    if extra_context:
+        context.update(extra_context)
     rendered_template = render(source, context)
     target_dir = path.dirname(target)
     if not path.exists(target_dir):
