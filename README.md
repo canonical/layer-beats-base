@@ -1,7 +1,7 @@
 # Beats Base
 
 > [!NOTE]
-> This charm is under maintainence mode. Only critical bug will be handled.
+> This charm is under maintenance mode. Only critical bug will be handled.
 
 This is a middle layer to include the common functions among the Elastic Beats
 products. Such as delivery via apt and common template parsing routines.
