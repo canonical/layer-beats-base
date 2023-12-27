@@ -105,7 +105,7 @@ def principal_unit_cache():
 
 
 def enable_beat_on_boot(service):
-    """Enable the beat to start automaticaly during boot."""
+    """Enable the beat to start automatically during boot."""
     # Remove any existing links first
     remove_beat_on_boot(service)
     service_resume(service)
@@ -122,7 +122,7 @@ def push_beat_index(elasticsearch, service, fatal=True):
     :param: str elasticsearch: host string for ES, <ip>:<port>
     :param: str service: index name
     :param: bool fatal: True to raise exception on failure; False to log it
-    :returns: bool: True if succesfull; False otherwise
+    :returns: bool: True if successful; False otherwise
     """
     cmd = [
         "curl",
