@@ -10,11 +10,23 @@ layer_mock = Mock()
 sys.modules["charms.apt"] = layer_mock
 sys.modules["charms.layer.status"] = layer_mock
 
-from elasticbeats import enable_beat_on_boot, get_package_candidate  # noqa: E402
+from elasticbeats import (  # noqa: E402
+    enable_beat_on_boot,
+    get_package_candidate,
+    render_without_context,
+)
 
 
 class TestElasticBeats(TestCase):
     """Tests our Elastic Beat library."""
+
+    def setUp(self):
+        mkdir_patcher = mock.patch("elasticbeats.mkdir")
+        render_patcher = mock.patch("elasticbeats.render")
+        mkdir_patcher.start()
+        render_patcher.start()
+        self.addCleanup(mkdir_patcher.stop)
+        self.addCleanup(render_patcher.stop)
 
     @mock.patch("elasticbeats.get_package_version")
     @mock.patch("elasticbeats.subprocess.Popen")
@@ -63,3 +75,31 @@ class TestElasticBeats(TestCase):
 
         resume_mock.assert_called_once_with(service_name)
         remove_beat_on_boot_mock.assert_called_once_with(service_name)
+
+    @mock.patch("elasticbeats.kv")
+    @mock.patch("elasticbeats.path")
+    @mock.patch("elasticbeats.config")
+    @mock.patch("elasticbeats.model_info_cache")
+    @mock.patch("elasticbeats.principal_unit_cache")
+    @mock.patch("elasticbeats.write_file")
+    def test_render_without_context(
+        self,
+        mock_write_file,
+        mock_principal_unit_cache,
+        mock_model_info_cache,
+        mock_config,
+        mock_path,
+        mock_kv,
+    ):
+        test_kv = {
+            "model_name": "test_model",
+            "model_uuid": "xxxx-xxxx",
+            "principal_name": "ubuntu/0",
+            "beat.logstash": "logstash",
+            "beat.elasticsearch": "elasticsearch",
+            "beat.kafka": "kafka",
+        }
+        mock_kv.return_value = test_kv
+        mock_config.return_value = {"logstash_hosts": "logstash", "kafka_hosts": "kafka"}
+        render_without_context(mock.Mock(), mock.Mock())
+        mock_write_file.assert_called_once()
