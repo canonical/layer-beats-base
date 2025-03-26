@@ -2,7 +2,7 @@
 # See LICENSE file for licensing details.
 """Base reactive file for beats charms."""
 from charmhelpers.core.unitdata import kv
-from charms.layer import status
+from charms.layer import status  # pylint: disable=import-error,no-name-in-module
 from charms.reactive import set_state, when, when_not
 
 
@@ -35,18 +35,18 @@ def cache_data(service, host_instance):
     hosts = []
     address_key = "private_address" if service == "logstash" else "host"
     for unit in units:
-        host_string = "{0}:{1}".format(unit[address_key], unit["port"])
+        host_string = f"{unit[address_key]}:{unit['port']}"
         if host_string not in hosts:
             hosts.append(host_string)
 
-    cache.set("beat.{}".format(service), hosts)
+    cache.set(f"beat.{service}", hosts)
     set_state("beat.render")
 
 
 def cache_remove_data(service):
     """Remove cache no longer needed now that logstash relation is gone."""
     cache = kv()
-    cache.unset("beat.{}".format(service))
+    cache.unset(f"beat.{service}")
     set_state("beat.render")
 
 
